@@ -1,13 +1,17 @@
 const bsconfig = require('./bsconfig.json');
-const fs = require("fs");
+const fs = require('fs');
+const path = require('path');
 
-const transpileModules = ["rescript"].concat(bsconfig["bs-dependencies"]);
-const withTM = require("next-transpile-modules")(transpileModules);
+const transpileModules = ['rescript'].concat(bsconfig['bs-dependencies']);
+const withTM = require('next-transpile-modules')(transpileModules);
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE == 'true',
+});
 
 const isWebpack5 = true;
 const config = {
-  target: "serverless",
-  pageExtensions: ["jsx", "js"],
+  target: 'serverless',
+  pageExtensions: ['jsx', 'js'],
   env: {
     ENV: process.env.NODE_ENV,
   },
@@ -30,17 +34,18 @@ const config = {
         test: /\.m?js$/,
         use: options.defaultLoaders.babel,
         exclude: /node_modules/,
-        type: "javascript/auto",
+        type: 'javascript/auto',
         resolve: {
           fullySpecified: false,
-        }
+        },
       });
     }
-    return config
+
+    return config;
   },
   future: {
-    webpack5: isWebpack5
-  }
+    webpack5: isWebpack5,
+  },
 };
 
-module.exports = withTM(config);
+module.exports = withTM(withBundleAnalyzer(config));
